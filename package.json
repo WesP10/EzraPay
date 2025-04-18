@@ -1,0 +1,22 @@
+{
+  "name": "ezrapay",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "firebase-admin": "^13.2.0",
+    "mongoose": "^8.13.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/mongoose": "^5.11.97",
+    "typescript": "^5.8.3"
+  }
+}
