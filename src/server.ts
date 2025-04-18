@@ -1,15 +1,17 @@
-// Import necessary modules
 import express, { Request, Response, NextFunction } from "express";
 import { MongoClient, ServerApiVersion } from 'mongodb';
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import dotenv from "dotenv";
 
+// Load environment variables
+dotenv.config();
 // Initialize Express app
 const app = express();
 app.use(express.json());
 
-// Firebase configuration
+// Firebase configuration for client SDK
 const firebaseConfig = {
   apiKey: process.env.FB_API_KEY,
   authDomain: process.env.FB_AUTH_DOMAIN,
@@ -21,7 +23,6 @@ const firebaseConfig = {
 };
 
 const firebase = initializeApp(firebaseConfig);
-const analytics = getAnalytics(firebase);
 const auth = getAuth();
 
 // Password validation function
@@ -83,7 +84,7 @@ app.post("/logout", ((req: Request, res: Response, next: NextFunction) => {
 }) as express.RequestHandler);
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const uri = "mongodb+srv://EZRA:"+ process.env.MONGO_DB_PASSWORD +"@ezrapay.flwga3p.mongodb.net/?retryWrites=true&w=majority&appName=ezrapay";
+const uri = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@ezrapay.flwga3p.mongodb.net/?retryWrites=true&w=majority&appName=ezrapay`;
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -96,13 +97,10 @@ connectDB().catch(console.dir);
 
 async function connectDB() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-    // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
-    // Ensures that the client will close when you finish/error
     await client.close();
   }
 }
