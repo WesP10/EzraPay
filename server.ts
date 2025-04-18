@@ -1,11 +1,89 @@
 // Import necessary modules
-import express from "express";
-import admin from "firebase-admin";
+import express, { Request, Response, NextFunction } from "express";
 import { MongoClient, ServerApiVersion } from 'mongodb';
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 
-const uri = "mongodb+srv://EZRA:"+ process.env.MONGO_DB_PASSWORD +"@ezrapay.flwga3p.mongodb.net/?retryWrites=true&w=majority&appName=ezrapay";
+// Initialize Express app
+const app = express();
+app.use(express.json());
+
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: process.env.FB_API_KEY,
+  authDomain: process.env.FB_AUTH_DOMAIN,
+  projectId: process.env.FB_PROJ_ID,
+  storageBucket: process.env.FB_STORAGE_BUCKET,
+  messagingSenderId: process.env.FB_SENDER_ID,
+  appId: process.env.FB_APP_ID,
+  measurementId: process.env.FB_MEASUREMENT_ID,
+};
+
+const firebase = initializeApp(firebaseConfig);
+const analytics = getAnalytics(firebase);
+const auth = getAuth();
+
+// Password validation function
+function validatePassword(password: string) {
+  const requirements = {
+    hasLowerCase: /[a-z]/.test(password),
+    hasUpperCase: /[A-Z]/.test(password),
+    hasNumber: /[0-9]/.test(password),
+    hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    hasMinLength: password.length >= 8
+  };
+
+  const isValid = Object.values(requirements).every(Boolean);
+  return { isValid, requirements };
+}
+
+// Define endpoints
+app.post("/register", ((req: Request, res: Response, next: NextFunction) => {
+  const { email, password } = req.body;
+  
+  // Validate password
+  const { isValid, requirements } = validatePassword(password);
+  if (!isValid) {
+    return res.status(400).json({ 
+      error: "Password does not meet requirements",
+      requirements 
+    });
+  }
+
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      res.json({ success: true, user: user.uid });
+    })
+    .catch((error) => {
+      res.status(400).json({ error: error.message });
+    });
+}) as express.RequestHandler);
+
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    res.json({ success: true, user: user.uid });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.post("/logout", ((req: Request, res: Response, next: NextFunction) => {
+  signOut(auth)
+    .then(() => {
+      res.json({ success: true, message: "Signed out successfully" });
+    })
+    .catch((error) => {
+      res.status(400).json({ error: error.message });
+    });
+}) as express.RequestHandler);
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const uri = "mongodb+srv://EZRA:"+ process.env.MONGO_DB_PASSWORD +"@ezrapay.flwga3p.mongodb.net/?retryWrites=true&w=majority&appName=ezrapay";
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -14,19 +92,7 @@ const client = new MongoClient(uri, {
   }
 });
 
-// Initialize Express app
-const app = express();
-app.use(express.json());
 connectDB().catch(console.dir);
-
-// Placeholder for Firebase Admin SDK initialization
-// Add your Firebase project credentials here
-const firebaseConfig = {
-  // Example: "type": "service_account"
-};
-admin.initializeApp({
-  credential: admin.credential.cert(firebaseConfig),
-});
 
 async function connectDB() {
   try {

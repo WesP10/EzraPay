@@ -7,8 +7,9 @@
     "strict": true,
     "outDir": "dist",
     "rootDir": ".",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
-  "include": ["*.ts"],
+  "include": ["*.ts", "*.json"],
   "exclude": ["node_modules"]
 } 
