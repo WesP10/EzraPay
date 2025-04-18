@@ -44,14 +44,14 @@ A backend Node.js project designed to enable seamless crypto-to-BRB conversions 
 - Status: Logic not implemented yet.
 
 ## Project Structure
-├── src
-│   ├── server.ts    # Endpoint logic
-│   ├── models         # MongoDB schemas
-│   ├── routes         # API routes
-│   └── utils          # Utility functions
-├── .env               # Environment configuration
-├── package.json       # Project metadata and dependencies
-└── tsconfig.json      # TypeScript configuration
+├── src \\
+│   ├── server.ts    # Endpoint logic \\
+│   ├── models         # MongoDB schemas \\
+│   ├── routes         # API routes \\
+│   └── utils          # Utility functions \\
+├── .env               # Environment configuration \\
+├── package.json       # Project metadata and dependencies \\
+└── tsconfig.json      # TypeScript configuration \\
 
 
 ## Future Enhancements
