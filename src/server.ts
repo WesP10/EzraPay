@@ -4,10 +4,10 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import dotenv from "dotenv";
+import * as solanaWeb3 from "@solana/web3.js";
 
-// Load environment variables
+console.log(solanaWeb3);
 dotenv.config();
-// Initialize Express app
 const app = express();
 app.use(express.json());
 
