@@ -1,14 +1,16 @@
 {
   "name": "ezrapay",
   "version": "1.0.0",
-  "description": "",
+  "description": "A full-stack payment application with Solana integration",
   "main": "dist/src/server.js",
   "type": "module",
   "scripts": {
     "start": "node dist/src/server.js",
     "build": "tsc",
     "dev": "tsc && node dist/src/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "frontend": "cd frontend && npm start",
+    "dev:all": "concurrently \"npm run dev\" \"npm run frontend\"",
+    "install:all": "npm install && cd frontend && npm install"
   },
   "keywords": [],
   "author": "",
@@ -26,7 +28,8 @@
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/mongoose": "^5.11.97",
-    "@types/node": "^20.17.30",
+    "@types/node": "^20.11.24",
+    "concurrently": "^8.2.2",
     "typescript": "^5.3.3"
   }
 }

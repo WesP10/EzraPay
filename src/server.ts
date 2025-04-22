@@ -19,14 +19,27 @@ const firebaseConfig = {
   storageBucket: process.env.FB_STORAGE_BUCKET,
   messagingSenderId: process.env.FB_SENDER_ID,
   appId: process.env.FB_APP_ID,
-  measurementId: process.env.FB_MEASUREMENT_ID,
+  measurementId: process.env.FB_MEASUREMENT_ID
 };
 
 const firebase = initializeApp(firebaseConfig);
 const auth = getAuth();
 
 // Password validation function
-function validatePassword(password: string) {
+function validatePassword(password: string | undefined | null) {
+  if (!password) {
+    return { 
+      isValid: false, 
+      requirements: {
+        hasLowerCase: false,
+        hasUpperCase: false,
+        hasNumber: false,
+        hasSpecialChar: false,
+        hasMinLength: false
+      }
+    };
+  }
+
   const requirements = {
     hasLowerCase: /[a-z]/.test(password),
     hasUpperCase: /[A-Z]/.test(password),
@@ -48,7 +61,8 @@ app.post("/register", ((req: Request, res: Response, next: NextFunction) => {
   if (!isValid) {
     return res.status(400).json({ 
       error: "Password does not meet requirements",
-      requirements 
+      requirements,
+      passwordDefined: !!password
     });
   }
 

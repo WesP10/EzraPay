@@ -1,67 +1,77 @@
-# Cornell OnChain Backend
+# EzraPay
 
-A backend Node.js project designed to enable seamless crypto-to-BRB conversions for the Cornell campus economy. The backend supports wallet creation, authentication, and transaction handling with robust scalability and security features.
-
-## Features
-- Wallet creation endpoint
-- Crypto-to-BRB conversion endpoint
-- Integration with MongoDB for database management
-- Firebase for secure authentication
-
-## Tech Stack
-- **Node.js**: Backend framework
-- **TypeScript**: Strongly-typed JavaScript for maintainable code
-- **MongoDB**: NoSQL database for storing user and transaction data
-- **Firebase**: Authentication for secure user management
-- **Express.js**: RESTful API framework for efficient endpoint management
-
-## Installation
-
-1. Clone the repository:
-  ```bash```
-  ```git clone https://github.com/your-repo/cornell-onchain-backend.git```
-  ```cd cornell-onchain-backend```
-2. Install dependencies:npm install
-  ```npm install```
-3. Configure environment variables: Create a .env file in the root directory and include:
-  ```MONGO_URI=mongodb://localhost:27017/yourDB```
-  ```FIREBASE_CREDENTIALS=path_to_your_firebase_service_account.json```
-4. Start the development server:
-  ```npm run dev```
-
-
-## Endpoints
-1. Wallet Creation
-- Method: POST
-- Endpoint: /wallet
-- Description: Creates a new wallet for the user.
-- Status: Logic not implemented yet.
-
-2. Crypto-to-BRB Conversion
-- Method: POST
-- Endpoint: /convert
-- Description: Converts cryptocurrency into BRBs based on the current exchange rate.
-- Status: Logic not implemented yet.
+A full-stack payment application with Solana integration.
 
 ## Project Structure
-├── src  <br />
-│   ├── server.ts    # Endpoint logic <br />
-│   ├── models         # MongoDB schemas  <br />
-│   ├── routes         # API routes  <br />
-│   └── utils          # Utility functions  <br />
-├── .env               # Environment configuration  <br />
-├── package.json       # Project metadata and dependencies  <br />
-└── tsconfig.json      # TypeScript configuration  <br />
 
+```
+ezrapay/
+├── frontend/           # React frontend application
+│   ├── public/        # Static files
+│   ├── src/           # Source files
+│   └── package.json   # Frontend dependencies
+├── src/               # Backend source files
+├── package.json       # Backend dependencies
+├── tsconfig.json      # TypeScript configuration
+└── .env              # Environment variables
+```
 
-## Future Enhancements
-- Implement wallet creation logic.
-- Add crypto-to-BRB conversion functionality.
-- Enhance security with encryption for sensitive data.
-- Integrate Solana or Ethereum blockchain for seamless transactions.
+## Setup
 
-## Contributing
-Contributions are welcome! Please fork the repository and submit a pull request.
-License
+### Backend Setup
+1. Install dependencies:
+```bash
+npm install
+```
 
-This project is licensed under the MIT License.
+2. Create a `.env` file with your environment variables:
+```
+MONGO_DB_USERNAME=your_username
+MONGO_DB_PASSWORD=your_password
+FB_API_KEY=your_firebase_api_key
+FB_AUTH_DOMAIN=your_firebase_auth_domain
+FB_PROJ_ID=your_project_id
+FB_STORAGE_BUCKET=your_storage_bucket
+FB_SENDER_ID=your_sender_id
+FB_APP_ID=your_app_id
+FB_MEASUREMENT_ID=your_measurement_id
+```
+
+3. Start the backend server:
+```bash
+npm run dev
+```
+
+### Frontend Setup
+1. Navigate to the frontend directory:
+```bash
+cd frontend
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Start the frontend development server:
+```bash
+npm start
+```
+
+## API Endpoints
+
+### Authentication
+- POST `/register` - Register a new user
+- POST `/login` - Login user
+- POST `/logout` - Logout user
+
+### Wallet
+- POST `/wallet` - Create a new wallet
+
+### Conversion
+- POST `/convert` - Convert crypto to BRB
+
+## Technologies Used
+- Backend: Node.js, Express, TypeScript, MongoDB, Firebase
+- Frontend: React, TypeScript
+- Blockchain: Solana
