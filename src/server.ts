@@ -1,13 +1,13 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
-import { MongoClient, ServerApiVersion, Db, Collection } from 'mongodb';
+import { MongoClient, ServerApiVersion, Db, Collection, ObjectId } from 'mongodb';
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import dotenv from "dotenv";
 import * as solanaWeb3 from "@solana/web3.js";
 import { getAuth as getAdminAuth } from "firebase-admin/auth"; // Use Firebase Admin SDK for token verification
-
+import multer from "multer";
 
 // console.log(solanaWeb3);
 dotenv.config();
@@ -94,7 +94,8 @@ app.post("/register", async (req: Request, res: Response) => {
     res.status(201).json({ success: true, userId });
   } catch (error: any) {
     console.error("Error during registration:", error.message);
-    res.status(500).json({ success: false, error: error.message });
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    res.status(500).json({ success: false, error: errorMessage });
   }
 });
 
@@ -240,8 +241,8 @@ app.post("/wallet", async (req, res) => {
 });
 
 app.post("/userinfo", async (req: Request, res: Response) => {
-  const userId = req.headers.userId as string;
-  console.log("Userinfo request received:", userId); // Log the userId
+  const userId = req.headers['x-user-id'] as string;
+  console.log("Userinfo request received:", userId);
 
   try {
     if (!db) {
@@ -268,33 +269,21 @@ app.post("/userinfo", async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     console.error("Error fetching user info:", error.message);
-    res.status(500).json({ success: false, error: error.message });
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    res.status(500).json({ success: false, error: errorMessage });
   }
 });
 
 app.post("/update-user", async (req: Request, res: Response) => {
-  const authHeader = req.headers.authorization;
+  const userId = req.headers['x-user-id'] as string;
 
   try {
     console.log("Update-user endpoint accessed");
 
-    if (!authHeader) {
+    if (!userId) {
       console.warn("Authorization header is missing");
       return res.status(401).json({ success: false, error: "Authorization header is required" });
     }
-
-    // Extract the token from the Authorization header
-    const token = authHeader.split(" ")[1];
-    if (!token) {
-      console.warn("Invalid Authorization header format");
-      return res.status(401).json({ success: false, error: "Invalid Authorization header format" });
-    }
-
-    console.log("Verifying token...");
-    // Verify the token using Firebase Admin SDK
-    const decodedToken = await getAdminAuth().verifyIdToken(token);
-    const userId = decodedToken.uid;
-    console.log(`Token verified. User ID: ${userId}`);
 
     if (!db) {
       console.error("Database not connected");
@@ -307,10 +296,10 @@ app.post("/update-user", async (req: Request, res: Response) => {
     console.log("Request body received:", { name, email, school, netId, photo });
 
     // Validate that all required fields are provided
-    if (!name || !email || !school || !netId) {
-      console.warn("Missing required fields in request body");
-      return res.status(400).json({ success: false, error: "All fields (name, email, school, netId) are required" });
-    }
+    // if (!name || !email || !school || !netId) {
+    //   console.warn("Missing required fields in request body");
+    //   return res.status(400).json({ success: false, error: "All fields (name, email, school, netId) are required" });
+    // }
 
     console.log("Updating user information in the database...");
     // Update the user information in the database
@@ -346,6 +335,66 @@ app.post("/update-user", async (req: Request, res: Response) => {
 app.post("/convert", (req, res) => {
   // Conversion logic here
   res.send("Crypto-to-BRB conversion endpoint - Logic not implemented yet");
+});
+
+const upload = multer({ storage: multer.memoryStorage() });
+
+app.post("/upload", upload.single("file"), async (req, res) => {
+  try {
+    const userId = req.headers["x-user-id"] as string; // Ensure the user is authenticated
+    if (!userId) {
+      return res.status(401).json({ success: false, error: "User ID is required in headers" });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: "No file uploaded" });
+    }
+
+    if (!db) {
+      return res.status(500).json({ success: false, error: "Database not connected" });
+    }
+
+    const photoBuffer = req.file.buffer;
+
+    // Insert the photo into the database
+    const result = await db.collection("photos").insertOne({
+      userId,
+      data: photoBuffer,
+      mimeType: req.file.mimetype,
+      createdAt: new Date(),
+    });
+
+    res.json({ success: true, photoId: result.insertedId });
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    res.status(500).json({ success: false, error: errorMessage });
+  }
+});
+
+app.get("/photo/:id", async (req, res) => {
+  try {
+    const photoId = req.params.id;
+
+    if (!db) {
+      return res.status(500).json({ success: false, error: "Database not connected" });
+    }
+
+    // Find the photo in the database
+    const photo = await db.collection("photos").findOne({ _id: new ObjectId(photoId) });
+
+    if (!photo) {
+      return res.status(404).json({ success: false, error: "Photo not found" });
+    }
+
+    // Set the correct Content-Type header and send the binary data
+    res.set("Content-Type", photo.mimeType);
+    res.send(photo.data.buffer); // Use `.buffer` to send the raw binary data
+  } catch (error) {
+    console.error("Error retrieving photo:", error);
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    res.status(500).json({ success: false, error: errorMessage });
+  }
 });
 
 // Start the server

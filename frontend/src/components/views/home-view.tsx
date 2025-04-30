@@ -16,7 +16,7 @@ export function HomeView({ user, accounts, onLogout }: HomeViewProps) {
   const [activeView, setActiveView] = useState<"home" | "wallet" | "settings">("home");
 
   // State for user data
-  const [photo, setPhoto] = useState<File | null>(null);
+  const [photo, setPhoto] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [netId, setNetId] = useState("");
@@ -30,15 +30,14 @@ export function HomeView({ user, accounts, onLogout }: HomeViewProps) {
           throw new Error("User ID is missing. Redirecting to login...");
         }
 
-        const response = await fetch(`/userinfo`, {
+        const response = await fetch(`http://localhost:3000/userinfo`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            userId: user.id, // Send userId in the Authorization header
+            "x-user-id": user.id,
           },
         });
 
-        console.log("Response from userinfo endpoint:", response); // Log the response object
         const data = await response.json();
         if (data.success) {
           console.log("User info fetched successfully:", data);
@@ -74,11 +73,11 @@ export function HomeView({ user, accounts, onLogout }: HomeViewProps) {
       <div className="bg-[#b31b1b] rounded-b-2xl px-4 pt-10 pb-6 text-white">
         <div className="text-center font-semibold tracking-wide text-lg mb-2">Welcome</div>
         <div className="flex flex-col items-center">
-          <Avatar className="w-20 h-20 border-4 border-white mb-2 shadow-lg">
+          <Avatar className="w-16 h-16">
             {photo ? (
-              <img src={URL.createObjectURL(photo)} alt="Profile" className="rounded-full" />
+              <img src={'http://localhost:3000/photo/'+photo} alt="Profile" className="rounded-full" />
             ) : (
-              <AvatarFallback className="text-3xl bg-[#861313]">?</AvatarFallback>
+              <AvatarFallback className="bg-gray-300 text-gray-600">?</AvatarFallback>
             )}
           </Avatar>
           <div className="text-lg font-bold uppercase mb-4 text-center tracking-wider">{name}</div>
@@ -134,18 +133,18 @@ export function HomeView({ user, accounts, onLogout }: HomeViewProps) {
         )}
         {activeView === "settings" && (
           <SettingsView
-            user={{ name, email, netId }}
+            user={{ id: user.id, name, email, netId }}
             onUpdate={async (updatedUser) => {
               console.log("Updated user details:", updatedUser);
 
               try {
-                const response = await fetch("/update-user", {
+                const response = await fetch("http://localhost:3000/update-user", {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
+                    "x-user-id": user.id,
                   },
                   body: JSON.stringify({
-                    userId: user.id, // Include user ID in the request
                     name: updatedUser.name,
                     email: updatedUser.email,
                     school: "Cornell University", // Replace with actual school if needed

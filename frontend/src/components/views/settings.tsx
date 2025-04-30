@@ -4,8 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 type SettingsViewProps = {
-  user: { name: string; email: string; netId?: string };
-  onUpdate: (updatedUser: { name: string; email: string; netId?: string; password?: string; photo?: File }) => void;
+  user: { id: string; name: string; email: string; netId?: string; photo?: string };
+  onUpdate: (updatedUser: { name: string; email: string; netId?: string; password?: string; photo?: string }) => void;
 };
 
 export function SettingsView({ user, onUpdate }: SettingsViewProps) {
@@ -13,12 +13,37 @@ export function SettingsView({ user, onUpdate }: SettingsViewProps) {
   const [email, setEmail] = useState(user.email);
   const [netId, setNetId] = useState(user.netId || "");
   const [password, setPassword] = useState("");
-  const [netIdPassword, setNetIdPassword] = useState("");
-  const [photo, setPhoto] = useState<File | null>(null);
+  const [photo, setPhoto] = useState<string | null>(user.photo || null);
+  const [photoId, setPhotoId] = useState<string | null>(null);
+
+  const handlePhotoUpload = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("http://localhost:3000/upload", {
+        method: "POST",
+        headers: {
+          "x-user-id": user.id, // Pass the user ID in the headers
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setPhotoId(data.photoId); // Save the photo ID
+        setPhoto(`http://localhost:3000/photo/${data.photoId}`); // Set the photo URL
+      } else {
+        console.error("Photo upload failed:", data.error);
+      }
+    } catch (error) {
+      console.error("Error uploading photo:", error);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onUpdate({ name, email, netId, password, photo: photo || undefined });
+    onUpdate({ name, email, netId, password, photo: photoId || undefined });
   };
 
   return (
@@ -29,7 +54,7 @@ export function SettingsView({ user, onUpdate }: SettingsViewProps) {
         <div className="flex items-center gap-4">
           <Avatar className="w-16 h-16">
             {photo ? (
-              <img src={URL.createObjectURL(photo)} alt="Profile" className="rounded-full" />
+              <img src={photo} alt="Profile" className="rounded-full" />
             ) : (
               <AvatarFallback className="bg-gray-300 text-gray-600">?</AvatarFallback>
             )}
@@ -39,7 +64,10 @@ export function SettingsView({ user, onUpdate }: SettingsViewProps) {
             <Input
               type="file"
               accept="image/*"
-              onChange={(e) => setPhoto(e.target.files?.[0] || null)}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handlePhotoUpload(file);
+              }}
               className="text-sm"
             />
           </label>
@@ -80,31 +108,19 @@ export function SettingsView({ user, onUpdate }: SettingsViewProps) {
           />
         </label>
 
-        {/* NetID and NetID Password */}
-        <div className="flex flex-col gap-4 border-t border-gray-200 pt-4">
-          <h3 className="text-sm font-semibold text-gray-700">NetID Information</h3>
-          <label className="text-sm font-medium text-gray-700">
-            <span className="block mb-1">NetID</span>
-            <Input
-              type="text"
-              value={netId}
-              onChange={(e) => setNetId(e.target.value)}
-              placeholder="Enter your NetID"
-            />
-          </label>
-          <label className="text-sm font-medium text-gray-700">
-            <span className="block mb-1">NetID Password</span>
-            <Input
-              type="password"
-              value={netIdPassword}
-              onChange={(e) => setNetIdPassword(e.target.value)}
-              placeholder="Enter your NetID password"
-            />
-          </label>
-        </div>
+        {/* NetID */}
+        <label className="text-sm font-medium text-gray-700">
+          <span className="block mb-1">NetID</span>
+          <Input
+            type="text"
+            value={netId}
+            onChange={(e) => setNetId(e.target.value)}
+            placeholder="Enter your NetID"
+          />
+        </label>
       </form>
 
-      {/* Submit Button in the Lower Right */}
+      {/* Submit Button */}
       <div className="fixed bottom-24 right-4">
         <Button
           type="submit"
