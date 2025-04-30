@@ -137,14 +137,18 @@ function AuthForm({ mode, onSuccess }: { mode: AuthMode; onSuccess: (uid: string
     e.preventDefault();
     setError(null);
     setPending(true);
+    console.log(`[AuthForm] Starting ${mode} process...`); // Log the mode (login/register)
     try {
       if (mode === "register" && password !== confirm) {
+        console.warn("[AuthForm] Passwords do not match"); // Log password mismatch
         setError("Passwords do not match");
         setPending(false);
         return;
       }
-      const reqUrl = `http://localhost:3000/${mode === "login" ? "login" : "register"}`;
+      const reqUrl = mode === "login" ? `http://localhost:3000/login` : `http://localhost:3000/register`;
       const payload = { email, password };
+      console.log(`[AuthForm] Sending request to ${reqUrl} with payload:`, payload); // Log request details
+
       let resp;
       try {
         resp = await fetch(reqUrl, {
@@ -153,7 +157,6 @@ function AuthForm({ mode, onSuccess }: { mode: AuthMode; onSuccess: (uid: string
           body: JSON.stringify(payload),
         });
       } catch (fetchErr) {
-        // Log details for debugging network issues
         console.error(
           `[AuthForm] Failed to fetch API:`,
           `URL: ${reqUrl}`,
@@ -168,17 +171,28 @@ function AuthForm({ mode, onSuccess }: { mode: AuthMode; onSuccess: (uid: string
         setPending(false);
         return;
       }
+
       const data = await resp.json();
-      if (!resp.ok) throw new Error(data.error || "Unknown error");
+      console.log(`[AuthForm] Received response:`, data); // Log response data
+
+      if (!resp.ok) {
+        console.error(`[AuthForm] API error:`, data.error || "Unknown error"); // Log API error
+        throw new Error(data.error || "Unknown error");
+      }
+
       if (data.user) {
+        console.log(`[AuthForm] ${mode} successful. User ID:`, data.user); // Log success
         onSuccess(data.user);
       } else {
+        console.error("[AuthForm] No user returned from API"); // Log missing user data
         throw new Error("No user returned from API");
       }
     } catch (e: any) {
+      console.error(`[AuthForm] Error during ${mode}:`, e.message); // Log caught error
       setError(e.message);
     } finally {
       setPending(false);
+      console.log(`[AuthForm] ${mode} process completed.`); // Log completion
     }
   }
 

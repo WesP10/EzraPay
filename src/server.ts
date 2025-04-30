@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from "express";
+import cors from "cors";
 import { MongoClient, ServerApiVersion, Db, Collection } from 'mongodb';
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
@@ -6,9 +7,11 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, si
 import dotenv from "dotenv";
 import * as solanaWeb3 from "@solana/web3.js";
 
+
 // console.log(solanaWeb3);
 dotenv.config();
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 // Firebase configuration for client SDK
@@ -55,10 +58,12 @@ function validatePassword(password: string | undefined | null) {
 // Define endpoints
 app.post("/register", ((req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
+  console.log("Register request received:", { email, password });
   
   // Validate password
   const { isValid, requirements } = validatePassword(password);
   if (!isValid) {
+    console.log("Password validation failed:", requirements);
     return res.status(400).json({ 
       error: "Password does not meet requirements",
       requirements,
@@ -77,12 +82,14 @@ app.post("/register", ((req: Request, res: Response, next: NextFunction) => {
 }) as express.RequestHandler);
 
 app.post("/login", async (req, res) => {
+  console.log("Login request received:", req.body); // Log the request body
   const { email, password } = req.body;
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     res.json({ success: true, user: user.uid });
   } catch (error: any) {
+    console.error("Login error:", error.message); // Log the error
     res.status(400).json({ error: error.message });
   }
 });
