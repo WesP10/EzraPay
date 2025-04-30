@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { SettingsView } from "@/components/views/settings";
 import { Home, Wallet, Settings } from "lucide-react";
 import { WalletView } from "@/components/views/wallet-view";
 
 type HomeViewProps = {
-  user: { name: string; school: string };
+  user: { id: string }; // Only `id` is required from the backend
   accounts: { name: string; balance: string }[];
   onLogout: () => void;
 };
@@ -14,20 +15,73 @@ type HomeViewProps = {
 export function HomeView({ user, accounts, onLogout }: HomeViewProps) {
   const [activeView, setActiveView] = useState<"home" | "wallet" | "settings">("home");
 
+  // State for user data
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [netId, setNetId] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch user info from the backend
+    async function fetchUserInfo() {
+      try {
+        if (!user.id) {
+          throw new Error("User ID is missing. Redirecting to login...");
+        }
+
+        const response = await fetch(`/userinfo`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            userId: user.id, // Send userId in the Authorization header
+          },
+        });
+
+        console.log("Response from userinfo endpoint:", response); // Log the response object
+        const data = await response.json();
+        if (data.success) {
+          console.log("User info fetched successfully:", data);
+
+          // Update state with fetched data
+          setName(data.name || "");
+          setEmail(data.email || "");
+          setNetId(data.netId || "");
+          if (data.photo) {
+            setPhoto(data.photo); // Assuming `photo` is a file or URL
+          }
+        } else {
+          console.error("Failed to fetch user info:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+        onLogout(); // Log the user out if fetching user info fails
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchUserInfo();
+  }, [user.id, onLogout]);
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
+
   return (
     <div className="bg-gray-100 min-h-screen flex flex-col justify-between">
       {/* HEADER CARD */}
       <div className="bg-[#b31b1b] rounded-b-2xl px-4 pt-10 pb-6 text-white">
-        <div className="text-center font-semibold tracking-wide text-lg mb-2">
-          {user.school}
-        </div>
+        <div className="text-center font-semibold tracking-wide text-lg mb-2">Welcome</div>
         <div className="flex flex-col items-center">
           <Avatar className="w-20 h-20 border-4 border-white mb-2 shadow-lg">
-            <AvatarFallback className="text-3xl bg-[#861313]">WC</AvatarFallback>
+            {photo ? (
+              <img src={URL.createObjectURL(photo)} alt="Profile" className="rounded-full" />
+            ) : (
+              <AvatarFallback className="text-3xl bg-[#861313]">?</AvatarFallback>
+            )}
           </Avatar>
-          <div className="text-lg font-bold uppercase mb-4 text-center tracking-wider">
-            {user.name}
-          </div>
+          <div className="text-lg font-bold uppercase mb-4 text-center tracking-wider">{name}</div>
           <Button className="bg-white text-[#b31b1b] w-full font-semibold max-w-xs shadow-md hover:bg-gray-100 aria-pressed:bg-gray-200">
             View Wallet
           </Button>
@@ -63,18 +117,11 @@ export function HomeView({ user, accounts, onLogout }: HomeViewProps) {
                 <button className="text-[#b31b1b] text-sm font-semibold hover:underline">ADD FUNDS</button>
               </div>
             </Card>
-            {/* TRANSACTIONS CARD */}
-            <Card className="rounded-xl shadow-sm">
-              <div className="flex items-center justify-between p-4 pb-2">
-                <div className="font-semibold text-gray-700 text-base">Transactions</div>
-                <button className="text-[#b31b1b] text-sm font-semibold hover:underline">ALL TRANSACTIONS</button>
-              </div>
-            </Card>
           </>
         )}
         {activeView === "wallet" && (
           <WalletView
-            userId={user.name}
+            userId={user.id}
             onCreateWallet={async () => {
               console.log("Dummy create wallet method called");
               return Promise.resolve();
@@ -86,10 +133,44 @@ export function HomeView({ user, accounts, onLogout }: HomeViewProps) {
           />
         )}
         {activeView === "settings" && (
-          <Card className="rounded-xl shadow-sm p-4">
-            <h2 className="text-lg font-bold text-gray-700">Settings</h2>
-            <p className="text-sm text-gray-600">Settings content goes here.</p>
-          </Card>
+          <SettingsView
+            user={{ name, email, netId }}
+            onUpdate={async (updatedUser) => {
+              console.log("Updated user details:", updatedUser);
+
+              try {
+                const response = await fetch("/update-user", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    userId: user.id, // Include user ID in the request
+                    name: updatedUser.name,
+                    email: updatedUser.email,
+                    school: "Cornell University", // Replace with actual school if needed
+                    netId: updatedUser.netId,
+                    photo: updatedUser.photo || null, // Optional photo field
+                  }),
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                  console.log("User information updated successfully:", data.message);
+                  setName(updatedUser.name);
+                  setEmail(updatedUser.email);
+                  setNetId(updatedUser.netId || "");
+                  if (updatedUser.photo) {
+                    setPhoto(updatedUser.photo);
+                  }
+                } else {
+                  console.error("Failed to update user information:", data.error);
+                }
+              } catch (error) {
+                console.error("Error updating user information:", error);
+              }
+            }}
+          />
         )}
       </div>
 

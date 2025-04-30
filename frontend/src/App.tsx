@@ -65,7 +65,7 @@ function App() {
     { name: "BRB Big Red Bucks Spring", balance: "$160.42" },
   ];
 
-  return <HomeView user={user} accounts={accounts} onLogout={handleLogout} />;
+  return <HomeView user={{ id: userId }} accounts={accounts} onLogout={handleLogout} />;
 }
 
 type AuthMode = "login" | "register";
