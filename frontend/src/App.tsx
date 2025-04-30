@@ -5,6 +5,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Home, Wallet, Settings } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { HomeView } from "@/components/views/home-view";
 
 function App() {
   // Authentication state
@@ -53,8 +54,8 @@ function App() {
       </div>
     );
   }
+
   // Authenticated: Show dashboard
-  // Hardcoded sample user/account info for demo purposes
   const user = {
     name: "WESTON RICHARD CLARK",
     school: "Cornell University",
@@ -63,65 +64,8 @@ function App() {
     { name: "CB1 City Bucks", balance: "$5.01" },
     { name: "BRB Big Red Bucks Spring", balance: "$160.42" },
   ];
-  return (
-    <div className="bg-gray-100 min-h-screen flex flex-col justify-between">
-      {/* HEADER CARD */}
-      <div className="bg-[#b31b1b] rounded-b-2xl px-4 pt-10 pb-6 text-white">
-        <div className="text-center font-semibold tracking-wide text-lg mb-2">
-          {user.school}
-        </div>
-        <div className="flex flex-col items-center">
-          <Avatar className="w-20 h-20 border-4 border-white mb-2 shadow-lg">
-            <AvatarFallback className="text-3xl bg-[#861313]">WC</AvatarFallback>
-          </Avatar>
-          <div className="text-lg font-bold uppercase mb-4 text-center tracking-wider">
-            {user.name}
-          </div>
-          <Button className="bg-white text-[#b31b1b] w-full font-semibold max-w-xs shadow-md hover:bg-gray-100 aria-pressed:bg-gray-200">
-            View Wallet
-          </Button>
-          <Button className="bg-transparent border-none text-white font-semibold mt-2 underline" type="button" onClick={handleLogout}>
-            Sign Out
-          </Button>
-        </div>
-      </div>
-      {/* Main content sections */}
-      <div className="flex-1 px-4 flex flex-col gap-4 mt-4">
-        {/* ACCOUNTS CARD */}
-        <Card className="rounded-xl shadow-sm pb-3">
-          <div className="p-4 pb-1 font-semibold text-gray-700 text-base">Accounts</div>
-          <div className="flex items-center gap-2 px-4 pb-2">
-            {accounts.map((acct) => (
-              <div
-                key={acct.name}
-                className="flex-1 bg-gray-100 rounded-lg p-3 text-center text-sm font-medium text-gray-900"
-              >
-                <div className="text-xs text-gray-500 mb-1 leading-tight">{acct.name}</div>
-                <div className="text-lg font-bold">{acct.balance}</div>
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-center pt-1">
-            <button className="text-[#b31b1b] text-sm font-semibold hover:underline">ADD FUNDS</button>
-          </div>
-        </Card>
-        {/* TRANSACTIONS CARD */}
-        <Card className="rounded-xl shadow-sm">
-          <div className="flex items-center justify-between p-4 pb-2">
-            <div className="font-semibold text-gray-700 text-base">Transactions</div>
-            <button className="text-[#b31b1b] text-sm font-semibold hover:underline">ALL TRANSACTIONS</button>
-          </div>
-        </Card>
-        <div className="flex-1" />
-      </div>
-      {/* BOTTOM NAVIGATION BAR */}
-      <nav className="fixed bottom-0 left-0 w-full bg-white shadow-t-lg border-t flex justify-around py-2 z-10">
-        <NavTab icon={<Home />} label="Home" />
-        <NavTab icon={<Wallet />} label="Wallet" />
-        <NavTab icon={<Settings />} label="Settings" />
-      </nav>
-    </div>
-  );
+
+  return <HomeView user={user} accounts={accounts} onLogout={handleLogout} />;
 }
 
 type AuthMode = "login" | "register";
@@ -145,7 +89,7 @@ function AuthForm({ mode, onSuccess }: { mode: AuthMode; onSuccess: (uid: string
         setPending(false);
         return;
       }
-      const reqUrl = mode === "login" ? `http://localhost:3000/login` : `http://localhost:3000/register`;
+      const reqUrl = mode === "login" ? `api/login` : `api/register`;
       const payload = { email, password };
       console.log(`[AuthForm] Sending request to ${reqUrl} with payload:`, payload); // Log request details
 
