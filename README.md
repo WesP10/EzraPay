@@ -143,7 +143,3 @@ ezrapay/
 - Add more tests for smart contracts.
 - Integrate Solana wallet functionality in the frontend.
 - Implement advanced tokenomics for `BRBToken`.
-
----
-
-Let me know if you need further assistance!
