@@ -77,7 +77,7 @@ app.post("/register", async (req: Request, res: Response) => {
 
     // Insert user information into MongoDB
     if (db) {
-      const usersCollection = db.collection("users"); // Replace with your collection name
+      const usersCollection = db.collection("users");
       const userInfo = {
         userId,
         name,
