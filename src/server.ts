@@ -153,7 +153,7 @@ app.post("/logout", ((req: Request, res: Response, next: NextFunction) => {
 }) as express.RequestHandler);
 
 // MongoDB connection
-const uri = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@ezrapay.flwga3p.mongodb.net/?retryWrites=true&w=majority&appName=ezrapay`;
+const uri = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@ezrapay.flwga3p.mongodb.net/?retryWrites=true&w=majority&tls=true&tlsInsecure=false&appName=ezrapay`;
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,

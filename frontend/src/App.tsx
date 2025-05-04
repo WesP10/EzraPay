@@ -1,11 +1,15 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Home, Wallet, Settings } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { HomeView } from "@/components/views/home-view";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { http, WagmiProvider, createConfig } from "wagmi";
+import { mainnet, linea, lineaSepolia } from "wagmi/chains";
+import { metaMask } from "wagmi/connectors";
+
+const client = new QueryClient();
 
 function App() {
   // Authentication state
@@ -64,8 +68,24 @@ function App() {
     { name: "CB1 City Bucks", balance: "$5.01" },
     { name: "BRB Big Red Bucks Spring", balance: "$160.42" },
   ];
+  const config = createConfig({
+    ssr: true, // Make sure to enable this for server-side rendering (SSR) applications.
+    chains: [mainnet, linea, lineaSepolia],
+    connectors: [metaMask()],
+    transports: {
+      [mainnet.id]: http(),
+      [linea.id]: http(),
+      [lineaSepolia.id]: http(),
+    },
+  });
 
-  return <HomeView user={{ id: userId }} accounts={accounts} onLogout={handleLogout} />;
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={client}>
+        <HomeView user={{ id: userId }} accounts={accounts} onLogout={handleLogout} />
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
 }
 
 type AuthMode = "login" | "register";

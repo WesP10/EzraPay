@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import ConnectWallet from "@/components/ui/connectWallet";
 
 type WalletViewProps = {
   userId: string | null;
@@ -62,12 +63,7 @@ export function WalletView({ userId, onCreateWallet, onConnectWallet }: WalletVi
       <p className="text-gray-700 text-center">
         No wallet connected. Please connect an existing wallet or create a new one.
       </p>
-      <Button
-        className="bg-[#b31b1b] text-white font-semibold px-4 py-2 rounded-md"
-        onClick={onConnectWallet}
-      >
-        Connect Wallet
-      </Button>
+      <ConnectWallet/>
       <Button
         className="bg-gray-700 text-white font-semibold px-4 py-2 rounded-md"
         onClick={onCreateWallet}
