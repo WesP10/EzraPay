@@ -7,7 +7,7 @@ import { HomeView } from "@/components/views/home-view";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, WagmiProvider, createConfig } from "wagmi";
 import { mainnet, linea, lineaSepolia } from "wagmi/chains";
-import { metaMask } from "wagmi/connectors";
+import { metaMask, coinbaseWallet } from "wagmi/connectors";
 
 const client = new QueryClient();
 
@@ -71,7 +71,7 @@ function App() {
   const config = createConfig({
     ssr: true, // Make sure to enable this for server-side rendering (SSR) applications.
     chains: [mainnet, linea, lineaSepolia],
-    connectors: [metaMask()],
+    connectors: [metaMask(), coinbaseWallet()],
     transports: {
       [mainnet.id]: http(),
       [linea.id]: http(),
