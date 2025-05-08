@@ -22,8 +22,10 @@ export function HomeView({ user, accounts, onLogout }: HomeViewProps) {
   const [netId, setNetId] = useState("");
   const [loading, setLoading] = useState(true);
 
+  // State for purchasing BRB tokens
+  const [brbAmount, setBrbAmount] = useState<number>(0);
+
   useEffect(() => {
-    // Fetch user info from the backend
     async function fetchUserInfo() {
       try {
         if (!user.id) {
@@ -40,21 +42,18 @@ export function HomeView({ user, accounts, onLogout }: HomeViewProps) {
 
         const data = await response.json();
         if (data.success) {
-          console.log("User info fetched successfully:", data);
-
-          // Update state with fetched data
           setName(data.name || "");
           setEmail(data.email || "");
           setNetId(data.netId || "");
           if (data.photo) {
-            setPhoto(data.photo); // Assuming `photo` is a file or URL
+            setPhoto(data.photo);
           }
         } else {
           console.error("Failed to fetch user info:", data.error);
         }
       } catch (error) {
         console.error("Error fetching user info:", error);
-        onLogout(); // Log the user out if fetching user info fails
+        onLogout();
       } finally {
         setLoading(false);
       }
@@ -62,6 +61,43 @@ export function HomeView({ user, accounts, onLogout }: HomeViewProps) {
 
     fetchUserInfo();
   }, [user.id, onLogout]);
+
+  const handlePurchaseBRB = async () => {
+    if (brbAmount <= 0) {
+      alert("Please enter a valid number of BRB tokens to purchase.");
+      return;
+    }
+
+    try {
+      console.log(`Purchasing ${brbAmount} BRB Tokens...`);
+      // Add logic to handle BRB token purchase
+      const response = await fetch("http://localhost:3000/purchase-brb", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-id": user.id,
+        },
+        body: JSON.stringify({ amount: brbAmount }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        alert(`Successfully purchased ${brbAmount} BRB Tokens!`);
+        setBrbAmount(0); // Reset the input field
+      } else {
+        console.error("Failed to purchase BRB tokens:", data.error);
+        alert("Failed to purchase BRB tokens. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error purchasing BRB tokens:", error);
+      alert("An error occurred while purchasing BRB tokens. Please try again.");
+    }
+  };
+
+  const handleTransferCrypto = async () => {
+    console.log("Transfer Crypto clicked");
+    // Add logic to handle crypto transfer
+  };
 
   if (loading) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
@@ -75,7 +111,7 @@ export function HomeView({ user, accounts, onLogout }: HomeViewProps) {
         <div className="flex flex-col items-center">
           <Avatar className="w-16 h-16">
             {photo ? (
-              <img src={'http://localhost:3000/photo/'+photo} alt="Profile" className="rounded-full" />
+              <img src={`http://localhost:3000/photo/${photo}`} alt="Profile" className="rounded-full" />
             ) : (
               <AvatarFallback className="bg-gray-300 text-gray-600">?</AvatarFallback>
             )}
@@ -95,7 +131,7 @@ export function HomeView({ user, accounts, onLogout }: HomeViewProps) {
       </div>
 
       {/* Main content sections */}
-      <div className="flex-1 px-4 flex flex-col gap-4 mt-4">
+      <div className="flex-1 px-4 flex flex-col gap-4 mt-4 pb-20">
         {activeView === "home" && (
           <>
             {/* ACCOUNTS CARD */}
@@ -114,6 +150,34 @@ export function HomeView({ user, accounts, onLogout }: HomeViewProps) {
               </div>
               <div className="flex justify-center pt-1">
                 <button className="text-[#b31b1b] text-sm font-semibold hover:underline">ADD FUNDS</button>
+              </div>
+            </Card>
+
+            {/* PURCHASE BRB TOKENS AND TRANSFER CRYPTO */}
+            <Card className="rounded-xl shadow-sm pb-3">
+              <div className="p-4 pb-1 font-semibold text-gray-700 text-base">Actions</div>
+              <div className="flex flex-col gap-3 px-4 pb-2">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    placeholder="Enter BRB amount"
+                    className="flex-1 rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#b31b1b]"
+                    value={brbAmount}
+                    onChange={(e) => setBrbAmount(Number(e.target.value))}
+                  />
+                  <Button
+                    className="bg-[#b31b1b] text-white font-semibold py-2 px-4 rounded-md shadow-md hover:bg-[#a10f0f]"
+                    onClick={handlePurchaseBRB}
+                  >
+                    Purchase
+                  </Button>
+                </div>
+                <Button
+                  className="bg-[#b31b1b] text-white font-semibold py-2 rounded-md shadow-md hover:bg-[#a10f0f]"
+                  onClick={handleTransferCrypto}
+                >
+                  Transfer Crypto
+                </Button>
               </div>
             </Card>
           </>
@@ -147,15 +211,14 @@ export function HomeView({ user, accounts, onLogout }: HomeViewProps) {
                   body: JSON.stringify({
                     name: updatedUser.name,
                     email: updatedUser.email,
-                    school: "Cornell University", // Replace with actual school if needed
+                    school: "Cornell University",
                     netId: updatedUser.netId,
-                    photo: updatedUser.photo || null, // Optional photo field
+                    photo: updatedUser.photo || null,
                   }),
                 });
 
                 const data = await response.json();
                 if (data.success) {
-                  console.log("User information updated successfully:", data.message);
                   setName(updatedUser.name);
                   setEmail(updatedUser.email);
                   setNetId(updatedUser.netId || "");
