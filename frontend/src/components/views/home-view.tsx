@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Header } from "@/components/ui/header";
 import { SettingsView } from "@/components/views/settings";
 import { Home, Wallet, Settings } from "lucide-react";
 import { WalletView } from "@/components/views/wallet-view";
@@ -24,6 +25,10 @@ export function HomeView({ user, accounts, onLogout }: HomeViewProps) {
 
   // State for purchasing BRB tokens
   const [brbAmount, setBrbAmount] = useState<number>(0);
+
+  function onWalletClick() {
+    setActiveView("wallet");
+  }
 
   useEffect(() => {
     async function fetchUserInfo() {
@@ -105,53 +110,7 @@ export function HomeView({ user, accounts, onLogout }: HomeViewProps) {
 
   return (
     <div className="bg-gradient-to-br from-slate-50 to-gray-100 min-h-screen flex flex-col">
-      {/* HEADER CARD */}
-      <div className="bg-gradient-to-r from-cornell-red via-cornell-red to-cornell-dark-red rounded-b-3xl px-6 pt-12 pb-8 text-white shadow-xl relative overflow-hidden">
-        {/* Cornell-inspired background pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-4 right-4 text-6xl">🏛️</div>
-          <div className="absolute bottom-4 left-4 text-4xl">📚</div>
-        </div>
-        
-        <div className="relative z-10">
-          <div className="text-center font-semibold tracking-wide text-xl mb-3 opacity-90">
-            Welcome Back, Big Red! 🐻
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="relative">
-              <Avatar className="w-20 h-20 ring-4 ring-white/20 shadow-lg overflow-hidden">
-              {photo ? (
-                <img
-                src={`http://localhost:3000/photo/${photo}`}
-                alt="Profile"
-                className="w-full h-full object-cover"
-                />
-              ) : (
-                <AvatarFallback className="flex items-center justify-center w-full h-full bg-white/20 text-white text-lg font-semibold backdrop-blur-sm">
-                {name.split(" ").map((n) => n[0]).join("").toUpperCase() || "?"}
-                </AvatarFallback>
-              )}
-              </Avatar>
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-400 rounded-full border-2 border-white flex items-center justify-center">
-              <span className="text-white text-xs">🟢</span>
-              </div>
-            </div>
-            <div className="text-2xl font-bold mt-4 mb-2 text-center tracking-wide">{name}</div>
-            <div className="text-sm opacity-80 mb-6">Cornell University Student</div>
-            <Button className="bg-white/15 backdrop-blur-sm border border-white/20 text-white w-full font-semibold max-w-xs shadow-lg hover:bg-white/25 transition-all duration-200 rounded-xl py-3">
-              <Wallet className="w-4 h-4 mr-2" />
-              View Wallet
-            </Button>
-            <Button
-              className="bg-transparent border-none text-white/80 font-medium mt-3 hover:text-white transition-colors duration-200"
-              type="button"
-              onClick={onLogout}
-            >
-              Sign Out
-            </Button>
-          </div>
-        </div>
-      </div>
+      <Header name={name} photo={photo} onLogout={onLogout} onWalletClick={onWalletClick} />
 
       {/* Main content sections */}
       <div className="flex-1 px-6 flex flex-col gap-6 mt-6 pb-24">

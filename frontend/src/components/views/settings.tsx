@@ -61,9 +61,9 @@ export function SettingsView({ user, onUpdate }: SettingsViewProps) {
             <div className="relative">
               <Avatar className="w-20 h-20 ring-4 ring-cornell-red/20">
                 {photo ? (
-                  <img src={photo} alt="Profile" className="rounded-full object-cover" />
+                  <img src={photo} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
-                  <AvatarFallback className="bg-cornell-red/10 text-cornell-red text-xl font-semibold">
+                  <AvatarFallback className="flex items-center justify-center w-full h-full bg-cornell-red/10 text-cornell-red text-xl font-semibold">
                     {name.split(' ').map(n => n[0]).join('').toUpperCase() || '?'}
                   </AvatarFallback>
                 )}

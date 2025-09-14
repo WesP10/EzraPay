@@ -100,6 +100,7 @@ body {
   .animate-slide-up {
     animation: slideUp 0.3s ease-out;
   }
+
 }
 
 @keyframes fadeIn {
@@ -121,5 +122,33 @@ body {
   to {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+@keyframes moveAround {
+  0% {
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  25% {
+    top: 50%;
+    left: calc(100% + 10px);
+    transform: translateY(-50%);
+  }
+  50% {
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  75% {
+    top: 50%;
+    left: -10px;
+    transform: translateY(-50%);
+  }
+  100% {
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 }
