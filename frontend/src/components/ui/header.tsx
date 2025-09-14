@@ -23,11 +23,12 @@ export function Header({ name, photo, onLogout, onWalletClick }: HeaderProps) {
               <div className="text-sm text-white/80">Cornell University Student</div>
             </div>
             <Button
-              className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 text-white font-medium transition-all duration-200 text-sm px-3 py-1.5 rounded-lg shadow-md"
+              className="group relative overflow-hidden bg-white/5 hover:bg-white/10 backdrop-blur-lg border border-white/20 hover:border-white/30 text-white/90 hover:text-white font-medium transition-all duration-300 text-sm px-4 py-2 rounded-xl shadow-sm hover:shadow-lg hover:scale-[1.02] hover:-translate-y-px"
               type="button"
               onClick={onLogout}
             >
-              Sign Out
+              <span className="relative z-10">Sign Out</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform -skew-x-12"></div>
             </Button>
           </div>
 
@@ -61,11 +62,14 @@ export function Header({ name, photo, onLogout, onWalletClick }: HeaderProps) {
               </div>
             </div>
 
-            <Button className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 text-white font-medium shadow-lg transition-all duration-200 rounded-lg py-2 px-4 text-sm"
+            <Button className="group relative overflow-hidden bg-white/5 hover:bg-white/10 backdrop-blur-lg border border-white/20 hover:border-white/30 text-white/90 hover:text-white font-medium shadow-sm hover:shadow-lg transition-all duration-300 rounded-xl py-2.5 px-5 text-sm hover:scale-[1.02] hover:-translate-y-px"
               onClick={onWalletClick}
             >
-              <Wallet className="w-4 h-4 mr-2" />
-              Wallet
+              <span className="relative z-10 flex items-center gap-2">
+                <Wallet className="w-4 h-4" />
+                Wallet
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform -skew-x-12"></div>
             </Button>
           </div>
         </div>
