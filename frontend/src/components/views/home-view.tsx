@@ -104,80 +104,142 @@ export function HomeView({ user, accounts, onLogout }: HomeViewProps) {
   }
 
   return (
-    <div className="bg-gray-100 min-h-screen flex flex-col justify-between">
+    <div className="bg-gradient-to-br from-slate-50 to-gray-100 min-h-screen flex flex-col">
       {/* HEADER CARD */}
-      <div className="bg-[#b31b1b] rounded-b-2xl px-4 pt-10 pb-6 text-white">
-        <div className="text-center font-semibold tracking-wide text-lg mb-2">Welcome</div>
-        <div className="flex flex-col items-center">
-          <Avatar className="w-16 h-16">
-            {photo ? (
-              <img src={`http://localhost:3000/photo/${photo}`} alt="Profile" className="rounded-full" />
-            ) : (
-              <AvatarFallback className="bg-gray-300 text-gray-600">?</AvatarFallback>
-            )}
-          </Avatar>
-          <div className="text-lg font-bold uppercase mb-4 text-center tracking-wider">{name}</div>
-          <Button className="bg-white text-[#b31b1b] w-full font-semibold max-w-xs shadow-md hover:bg-gray-100 aria-pressed:bg-gray-200">
-            View Wallet
-          </Button>
-          <Button
-            className="bg-transparent border-none text-white font-semibold mt-2 underline"
-            type="button"
-            onClick={onLogout}
-          >
-            Sign Out
-          </Button>
+      <div className="bg-gradient-to-r from-cornell-red via-cornell-red to-cornell-dark-red rounded-b-3xl px-6 pt-12 pb-8 text-white shadow-xl relative overflow-hidden">
+        {/* Cornell-inspired background pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-4 right-4 text-6xl">🏛️</div>
+          <div className="absolute bottom-4 left-4 text-4xl">📚</div>
+        </div>
+        
+        <div className="relative z-10">
+          <div className="text-center font-semibold tracking-wide text-xl mb-3 opacity-90">
+            Welcome Back, Big Red! 🐻
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="relative">
+              <Avatar className="w-20 h-20 ring-4 ring-white/20 shadow-lg overflow-hidden">
+              {photo ? (
+                <img
+                src={`http://localhost:3000/photo/${photo}`}
+                alt="Profile"
+                className="w-full h-full object-cover"
+                />
+              ) : (
+                <AvatarFallback className="flex items-center justify-center w-full h-full bg-white/20 text-white text-lg font-semibold backdrop-blur-sm">
+                {name.split(" ").map((n) => n[0]).join("").toUpperCase() || "?"}
+                </AvatarFallback>
+              )}
+              </Avatar>
+              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-400 rounded-full border-2 border-white flex items-center justify-center">
+              <span className="text-white text-xs">🟢</span>
+              </div>
+            </div>
+            <div className="text-2xl font-bold mt-4 mb-2 text-center tracking-wide">{name}</div>
+            <div className="text-sm opacity-80 mb-6">Cornell University Student</div>
+            <Button className="bg-white/15 backdrop-blur-sm border border-white/20 text-white w-full font-semibold max-w-xs shadow-lg hover:bg-white/25 transition-all duration-200 rounded-xl py-3">
+              <Wallet className="w-4 h-4 mr-2" />
+              View Wallet
+            </Button>
+            <Button
+              className="bg-transparent border-none text-white/80 font-medium mt-3 hover:text-white transition-colors duration-200"
+              type="button"
+              onClick={onLogout}
+            >
+              Sign Out
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Main content sections */}
-      <div className="flex-1 px-4 flex flex-col gap-4 mt-4 pb-20">
+      <div className="flex-1 px-6 flex flex-col gap-6 mt-6 pb-24">
         {activeView === "home" && (
           <>
             {/* ACCOUNTS CARD */}
-            <Card className="rounded-xl shadow-sm pb-3">
-              <div className="p-4 pb-1 font-semibold text-gray-700 text-base">Accounts</div>
-              <div className="flex items-center gap-2 px-4 pb-2">
-                {accounts.map((acct) => (
-                  <div
-                    key={acct.name}
-                    className="flex-1 bg-gray-100 rounded-lg p-3 text-center text-sm font-medium text-gray-900"
-                  >
-                    <div className="text-xs text-gray-500 mb-1 leading-tight">{acct.name}</div>
-                    <div className="text-lg font-bold">{acct.balance}</div>
+            <Card className="rounded-2xl shadow-sm border-0 bg-white/70 backdrop-blur-sm">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-gray-800 text-lg">Your Accounts</h3>
+                  <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                    {accounts.length} {accounts.length === 1 ? 'account' : 'accounts'}
                   </div>
-                ))}
-              </div>
-              <div className="flex justify-center pt-1">
-                <button className="text-[#b31b1b] text-sm font-semibold hover:underline">ADD FUNDS</button>
+                </div>
+                <div className="grid grid-cols-1 gap-3">
+                  {accounts.map((acct, index) => (
+                    <div
+                      key={acct.name}
+                      className="bg-gradient-to-r from-gray-50 to-white rounded-xl p-4 border border-gray-100 hover:shadow-md transition-all duration-200"
+                    >
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="text-sm text-gray-600 font-medium mb-1">{acct.name}</div>
+                          <div className="text-2xl font-bold text-gray-900">{acct.balance}</div>
+                        </div>
+                        <div className="w-12 h-12 bg-cornell-red/10 rounded-full flex items-center justify-center">
+                          <Wallet className="w-6 h-6 text-cornell-red" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex justify-center pt-4">
+                  <button className="text-cornell-red text-sm font-semibold hover:text-cornell-dark-red transition-colors duration-200 flex items-center gap-2">
+                    <span className="w-4 h-4 bg-cornell-red rounded-full flex items-center justify-center text-white text-xs">+</span>
+                    ADD FUNDS
+                  </button>
+                </div>
               </div>
             </Card>
 
             {/* PURCHASE BRB TOKENS AND TRANSFER CRYPTO */}
-            <Card className="rounded-xl shadow-sm pb-3">
-              <div className="p-4 pb-1 font-semibold text-gray-700 text-base">Actions</div>
-              <div className="flex flex-col gap-3 px-4 pb-2">
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    placeholder="Enter BRB amount"
-                    className="flex-1 rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#b31b1b]"
-                    value={brbAmount}
-                    onChange={(e) => setBrbAmount(Number(e.target.value))}
-                  />
+            <Card className="rounded-2xl shadow-sm border-0 bg-white/70 backdrop-blur-sm">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-gray-800 text-lg">Quick Actions</h3>
+                  <div className="w-8 h-8 bg-cornell-red/10 rounded-full flex items-center justify-center">
+                    <span className="text-cornell-red text-lg">⚡</span>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="bg-gradient-to-r from-cornell-red/5 to-cornell-red/10 rounded-xl p-4 border border-cornell-red/20">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-cornell-red rounded-lg flex items-center justify-center text-white font-bold">
+                        🍔
+                      </div>
+                      <div>
+                        <div className="font-semibold text-gray-800">BRB Tokens</div>
+                        <div className="text-sm text-gray-600">Big Red Bucks • Campus dining made easy</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="number"
+                        placeholder="Amount ($)"
+                        className="flex-1 rounded-lg border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cornell-red/50 focus:border-cornell-red transition-all duration-200"
+                        value={brbAmount}
+                        onChange={(e) => setBrbAmount(Number(e.target.value))}
+                      />
+                      <Button
+                        className="bg-cornell-red text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-cornell-dark-red transition-all duration-200"
+                        onClick={handlePurchaseBRB}
+                      >
+                        Add Funds
+                      </Button>
+                    </div>
+                    <div className="mt-2 text-xs text-gray-500">
+                      💡 Perfect for Okenshields, Trillium, and campus cafes
+                    </div>
+                  </div>
                   <Button
-                    className="bg-[#b31b1b] text-white font-semibold py-2 px-4 rounded-md shadow-md hover:bg-[#a10f0f]"
-                    onClick={handlePurchaseBRB}
+                    className="w-full bg-gradient-to-r from-gray-700 to-gray-800 text-white font-semibold py-4 rounded-xl shadow-md hover:from-gray-800 hover:to-gray-900 transition-all duration-200 flex items-center justify-center gap-2"
+                    onClick={handleTransferCrypto}
                   >
-                    Purchase
+                    <span className="text-lg">💸</span>
+                    Transfer Crypto
                   </Button>
                 </div>
-                <Button
-                  className="bg-[#b31b1b] text-white font-semibold py-2 rounded-md shadow-md hover:bg-[#a10f0f]"
-                  onClick={handleTransferCrypto}
-                >
-                  Transfer Crypto
-                </Button>
               </div>
             </Card>
           </>
@@ -237,7 +299,7 @@ export function HomeView({ user, accounts, onLogout }: HomeViewProps) {
       </div>
 
       {/* BOTTOM NAVIGATION BAR */}
-      <nav className="fixed bottom-0 left-0 w-full bg-white shadow-t-lg border-t flex justify-around py-2 z-10">
+      <nav className="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-md shadow-2xl border-t border-gray-200/50 flex justify-around py-3 z-10">
         <NavTab icon={<Home />} label="Home" isActive={activeView === "home"} onClick={() => setActiveView("home")} />
         <NavTab icon={<Wallet />} label="Wallet" isActive={activeView === "wallet"} onClick={() => setActiveView("wallet")} />
         <NavTab icon={<Settings />} label="Settings" isActive={activeView === "settings"} onClick={() => setActiveView("settings")} />
@@ -259,13 +321,18 @@ function NavTab({
 }) {
   return (
     <button
-      className={`group flex flex-col items-center px-3 pt-1 gap-0.5 ${
-        isActive ? "text-[#b31b1b]" : "text-gray-500"
-      } hover:text-[#b31b1b] focus:text-[#b31b1b]`}
+      className={`group flex flex-col items-center px-4 py-2 gap-1 rounded-xl transition-all duration-200 ${
+        isActive 
+          ? "text-cornell-red bg-cornell-red/10" 
+          : "text-gray-500 hover:text-cornell-red hover:bg-cornell-red/5"
+      }`}
       onClick={onClick}
     >
-      <span className="h-6 w-6">{icon}</span>
+      <span className={`h-6 w-6 transition-transform duration-200 ${isActive ? 'scale-110' : 'group-hover:scale-105'}`}>
+        {icon}
+      </span>
       <span className="text-xs font-semibold">{label}</span>
+      {isActive && <div className="w-4 h-0.5 bg-cornell-red rounded-full mt-0.5"></div>}
     </button>
   );
 }

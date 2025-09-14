@@ -47,30 +47,58 @@ export function WalletView({ userId, onCreateWallet, onConnectWallet }: WalletVi
 
   if (wallet) {
     return (
-      <div className="p-4">
-        <Card className="rounded-xl shadow-md p-4">
-          <h2 className="text-lg font-bold text-gray-700 mb-2">Wallet Information</h2>
-          <p className="text-sm text-gray-600">
-            <strong>Public Key:</strong> {wallet.publicKey}
-          </p>
+      <div className="p-6">
+        <Card className="rounded-2xl shadow-sm border-0 bg-white/70 backdrop-blur-sm">
+          <div className="p-6">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 bg-gradient-to-r from-cornell-red to-cornell-dark-red rounded-xl flex items-center justify-center">
+                <span className="text-white text-xl">💳</span>
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-800">Connected Wallet</h2>
+                <p className="text-sm text-gray-600">Your digital assets</p>
+              </div>
+            </div>
+            <div className="bg-gradient-to-r from-gray-50 to-white rounded-xl p-4 border border-gray-100">
+              <p className="text-sm text-gray-600 mb-2 font-medium">Public Key</p>
+              <p className="text-sm font-mono bg-gray-100 p-3 rounded-lg break-all">
+                {wallet.publicKey}
+              </p>
+            </div>
+          </div>
         </Card>
       </div>
     );
   }
 
   return (
-    <div className="p-4 flex flex-col items-center gap-4">
-      <p className="text-gray-700 text-center">
-        No wallet connected. Please connect an existing wallet or create a new one.
-      </p>
-      <ConnectWallet/>
-      <Button
-        className="bg-gray-700 text-white font-semibold px-4 py-2 rounded-md"
-        onClick={onCreateWallet}
-      >
-        Create Wallet
-      </Button>
-      {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
+    <div className="p-6 flex flex-col items-center gap-6">
+      <div className="text-center">
+        <div className="w-24 h-24 bg-gradient-to-r from-cornell-red/10 to-cornell-red/20 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+          <span className="text-4xl">🚀</span>
+        </div>
+        <h3 className="text-xl font-bold text-gray-800 mb-2">Get Started with Crypto</h3>
+        <p className="text-gray-600 text-center max-w-sm">
+          Connect your existing wallet or create a new one to start managing your digital assets
+        </p>
+      </div>
+      
+      <div className="w-full max-w-sm space-y-4">
+        <ConnectWallet/>
+        <Button
+          className="w-full bg-gradient-to-r from-cornell-red to-cornell-dark-red text-white font-semibold px-6 py-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-200"
+          onClick={onCreateWallet}
+        >
+          <span className="mr-2">✨</span>
+          Create New Wallet
+        </Button>
+      </div>
+      
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm max-w-sm">
+          {error}
+        </div>
+      )}
     </div>
   );
 }

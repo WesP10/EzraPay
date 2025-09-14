@@ -47,86 +47,123 @@ export function SettingsView({ user, onUpdate }: SettingsViewProps) {
   };
 
   return (
-    <div className="p-4 relative">
-      <h2 className="text-lg font-bold text-gray-700 mb-4">Settings</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4 pb-20">
+    <div className="p-6 relative">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">Settings</h2>
+        <p className="text-gray-600">Manage your account preferences</p>
+      </div>
+      
+      <form onSubmit={handleSubmit} className="space-y-6 pb-24">
         {/* Profile Photo */}
-        <div className="flex items-center gap-4">
-          <Avatar className="w-16 h-16">
-            {photo ? (
-              <img src={photo} alt="Profile" className="rounded-full" />
-            ) : (
-              <AvatarFallback className="bg-gray-300 text-gray-600">?</AvatarFallback>
-            )}
-          </Avatar>
-          <label className="text-sm font-medium text-gray-700">
-            <span className="block mb-1">Profile Photo</span>
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) handlePhotoUpload(file);
-              }}
-              className="text-sm"
-            />
-          </label>
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border-0 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Profile Photo</h3>
+          <div className="flex items-center gap-6">
+            <div className="relative">
+              <Avatar className="w-20 h-20 ring-4 ring-cornell-red/20">
+                {photo ? (
+                  <img src={photo} alt="Profile" className="rounded-full object-cover" />
+                ) : (
+                  <AvatarFallback className="bg-cornell-red/10 text-cornell-red text-xl font-semibold">
+                    {name.split(' ').map(n => n[0]).join('').toUpperCase() || '?'}
+                  </AvatarFallback>
+                )}
+              </Avatar>
+              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-cornell-red rounded-full border-2 border-white flex items-center justify-center">
+                <span className="text-white text-xs">📷</span>
+              </div>
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Upload new photo
+              </label>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handlePhotoUpload(file);
+                }}
+                className="text-sm border-gray-200 rounded-xl focus:ring-cornell-red/50 focus:border-cornell-red"
+              />
+            </div>
+          </div>
         </div>
 
-        {/* Name */}
-        <label className="text-sm font-medium text-gray-700">
-          <span className="block mb-1">Change Name</span>
-          <Input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter your name"
-            required
-          />
-        </label>
+        {/* Personal Information */}
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border-0 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Personal Information</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Full Name
+              </label>
+              <Input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter your full name"
+                className="border-gray-200 rounded-xl focus:ring-cornell-red/50 focus:border-cornell-red"
+                required
+              />
+            </div>
 
-        {/* Email */}
-        <label className="text-sm font-medium text-gray-700">
-          <span className="block mb-1">Update Email</span>
-          <Input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
-            required
-          />
-        </label>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email Address
+              </label>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your.email@cornell.edu"
+                className="border-gray-200 rounded-xl focus:ring-cornell-red/50 focus:border-cornell-red"
+                required
+              />
+            </div>
 
-        {/* Password */}
-        <label className="text-sm font-medium text-gray-700">
-          <span className="block mb-1">Update Password</span>
-          <Input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter a new password"
-          />
-        </label>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Cornell NetID
+              </label>
+              <Input
+                type="text"
+                value={netId}
+                onChange={(e) => setNetId(e.target.value)}
+                placeholder="abc123"
+                className="border-gray-200 rounded-xl focus:ring-cornell-red/50 focus:border-cornell-red"
+              />
+              <p className="text-xs text-gray-500 mt-1">Your Cornell network ID for campus services</p>
+            </div>
+          </div>
+        </div>
 
-        {/* NetID */}
-        <label className="text-sm font-medium text-gray-700">
-          <span className="block mb-1">NetID</span>
-          <Input
-            type="text"
-            value={netId}
-            onChange={(e) => setNetId(e.target.value)}
-            placeholder="Enter your NetID"
-          />
-        </label>
+        {/* Security */}
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border-0 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Security</h3>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              New Password
+            </label>
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="password"
+              className="border-gray-200 rounded-xl focus:ring-cornell-red/50 focus:border-cornell-red"
+            />
+            <p className="text-xs text-gray-500 mt-1">Only enter a password if you want to change it</p>
+          </div>
+        </div>
       </form>
 
       {/* Submit Button */}
-      <div className="fixed bottom-24 right-4">
+      <div className="fixed bottom-28 right-6">
         <Button
           type="submit"
-          className="bg-[#b31b1b] text-white font-semibold px-6 py-2 rounded-md shadow-md"
+          className="bg-gradient-to-r from-cornell-red to-cornell-dark-red text-white font-semibold px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
           onClick={handleSubmit}
         >
+          <span>💾</span>
           Save Changes
         </Button>
       </div>
