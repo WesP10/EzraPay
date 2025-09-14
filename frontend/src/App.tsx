@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider, createConfig, http } from "wagmi";
 import { mainnet, linea, lineaSepolia } from "wagmi/chains";
 import { metaMask, coinbaseWallet, safe, injected } from "wagmi/connectors";
+import { link } from "fs";
 
 const client = new QueryClient();
 
@@ -67,8 +68,9 @@ function App() {
     school: "Cornell University",
   };
   const accounts = [
-    { name: "CB1 City Bucks", balance: "$5.01" },
-    { name: "BRB Big Red Bucks Spring", balance: "$160.42" },
+    { name: "CB1 City Bucks", balance: "$5.01", link: "https://get.cbord.com/cornell/full/add_funds.php" },
+    { name: "BRB Big Red Bucks", balance: "$160.42", link: "https://get.cbord.com/cornell/full/add_funds.php" },
+    { name: "BRB Tokens", balance: "42.0 BRB", link: "http://localhost:5173/" },
   ];
 
   // Add Phantom connector to the wagmi configuration
